@@ -1,81 +1,103 @@
 # 🧩 Desafio DevOps #01 — Criar EC2 com Terraform (Nível Intermediário)
 
-Bem-vindo(a) ao primeiro desafio desta série!  
-Aqui você irá praticar conceitos essenciais de **Infraestrutura como Código** utilizando **Terraform** para provisionar uma instância EC2 com webserver na AWS.
+Bem-vindo(a) ao segundo nível do Desafio DevOps #01!  
+Aqui você irá evoluir a solução criada no nível iniciante, aplicando práticas mais avançadas de **Infraestrutura como Código** utilizando **Terraform**.
 
-Este desafio é ideal para quem está começando no Terraform ou quer reforçar práticas de IaC.
+Este desafio é ideal para quem já concluiu o nível iniciante e agora deseja aprender a estruturar projetos Terraform de maneira mais profissional e escalável.
 
 ## 🎯 Objetivo
 
-Dentro desta pasta (`/desafio`), você deve criar os arquivos Terraform necessários para:
+Dentro desta pasta (`/desafio`), você encontrará a **base completa** construída no desafio iniciante.  
 
-1. Criar uma **instância EC2** básica
-2. Criar um **Security Group** com:
-   - Porta **22/tcp** liberada (SSH)
-   - Porta **80/tcp** liberada (HTTP)
-3. Configurar **User Data** para instalar automaticamente um webserver
-4. Expor via *outputs*:
-   - IP público da instância
-   - (Opcional) DNS público
-5. Adicionar **tags** nos recursos
-6. Organizar o código de forma clara
+A partir dessa base, o objetivo é aprimorar o projeto implementando melhorias como:
 
-Você encontrará o arquivo `user_data.sh` aqui na pasta do desafio, ele já contém um script básico, mas você pode editá-lo.
+1. Refatorar o código usando **módulos Terraform**
+2. Utilizar arquivos **`.tfvars`** para facilitar customização
+3. Criar **variáveis extras** e tornar o código mais flexível
+4. Implementar uma **AMI dinâmica**, usando data sources
+5. (Opcional) Criar uma **IAM Role e Instance Profile** para a instância EC2
+6. Melhorar organização, tags, outputs e boas práticas gerais
+
+A ideia aqui não é apenas “fazer funcionar”, mas sim **evoluir o design do código**, criando uma estrutura mais limpa, separada e reutilizável.
+
+Você já tem um projeto funcionando — agora é hora de transformá‑lo em algo mais robusto.
 
 # 💬 Dicas importantes para te ajudar
 
-## 💡 1. Comece criando o arquivo `main.tf`
-O Terraform funciona a partir de um arquivo raiz.  
-Dentro dele você precisará declarar:
+## 💡 1. Separe sua infraestrutura em módulos
 
-- O **provider AWS**
-- Um **recurso "aws_instance"**
-- Um **recurso "aws_security_group"**
-
-Procure por exemplos simples na documentação do Terraform:
-https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources
-
-## 💡 2. Pesquise por AMIs adequadas
-
-Use o tipo de instância **`t3.micro`**, que faz parte do **AWS Free Tier** (quando disponível na sua conta). Ele é leve, barato e ideal para este desafio.
-
-Para a AMI, recomendamos usar **Amazon Linux 2**, que é a opção mais comum para testes, possui boa compatibilidade e é amplamente usada em exemplos da AWS.
-
-### 🔍 Como encontrar uma AMI Amazon Linux 2 (maneira correta)
-
-Você pode listar AMIs oficiais da Amazon usando este comando filtrado:
-
-```bash
-aws ec2 describe-images \
-  --owners amazon \
-  --filters "Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2" \
-  --query "Images[*].[ImageId,Name,CreationDate]" \
-  --output table
-```
-
-## 💡 3. No Security Group, lembre-se de:
-- Criar regras **ingress** para 22 e 80  
-- Criar uma regra **egress** liberando tudo (0.0.0.0/0)  
-- Associar o SG à sua instância EC2
-
-Digite no Google: _"terraform aws_security_group ingress example"_
-
-## 💡 4. O `user_data.sh` deve ser referenciado no recurso EC2
-Dica: use a função `file()`, algo como:
+Considere criar uma estrutura como:
 
 ```
-user_data = file("${path.module}/user_data.sh")
+modules/
+ec2/
+security\_group/
+iam/        (opcional)
 ```
 
-## 💡 5. Não se esqueça do output
-Você deve retornar o IP público da EC2.
+Cada módulo deve ter seu próprio `main.tf`, `variables.tf` e `outputs.tf`.
 
-Dica:  
-Pesquise no Google: _"terraform output ec2 public ip"_
+## 💡 2. Utilize arquivos `.tfvars`
 
-O recurso `aws_instance` possui um atributo chamado `public_ip`.
+Crie arquivos como:
 
-## 💡 6. Teste em pequenas partes
+```
+dev.tfvars
+prod.tfvars
+```
+
+Exemplo de execução:
+
+```
+terraform apply -var-file="dev.tfvars"
+
+```
+
+Isso ajuda a manter ambientes diferentes de forma organizada.
+
+## 💡 3. Adicione variáveis para tornar o código flexível
+
+Algumas sugestões:
+
+- Nome da instância  
+- Nome do Security Group  
+- Tags básicas (owner, environment)  
+- Tipo de sistema operacional para AMI (ex.: `amazon-linux-2`)  
+
+Evite valores fixos espalhados no código.
+
+## 💡 4. Use data sources para selecionar automaticamente a AMI
+
+Em vez de colocar o AMI ID manualmente, utilize:
+
+```
+data "aws_ami" "amzlnx2" {
+...
+}
+```
+
+Isso torna seu código mais confiável e portátil entre regiões.
+
+## 💡 5. (Opcional) Crie uma IAM Role e Instance Profile
+
+Isso aproxima o projeto do que é usado em ambientes reais.
+
+Considere:
+
+- `aws_iam_role`
+- `aws_iam_policy`
+- `aws_iam_instance_profile`
+
+## 💡 6. Organize arquivos e outputs
+
+O código deve continuar fácil de entender e de manter.
+
+Algumas sugestões:
+
+- `main.tf` enxuto, chamando apenas módulos
+- Variáveis organizadas em `variables.tf`
+
+## 💡 7. Teste em pequenas partes
 Antes de rodar o `terraform apply`, execute:
 
 ```
@@ -86,23 +108,15 @@ terraform validate
 
 Isso evita erros simples.
 
-## 💡 7. (Opcional) Adicione variáveis
-Um bom exercício é criar um arquivo `variables.tf` com:
-
-- AMI ID
-- Tipo de instância
-- Nome da tag
-
-
 # 📁 Estrutura desta pasta
 
 ```
 /desafio
-├── main.tf            ← Você deve criar
-├── variables.tf       ← Opcional (boa prática)
-├── outputs.tf         ← Opcional (recomendado)
-├── user_data.sh       ← Script inicial para instalar webserver
-└── README.md          ← Este arquivo
+├── main.tf                ← Base do desafio iniciante (para refatorar)
+├── variables.tf           ← Você pode ajustar ou expandir
+├── outputs.tf             ← Ajuste conforme evolução
+├── user_data.sh           ← Script existente (pode ser mantido)
+└── README.md              ← Este arquivo
 ```
 
 # ▶️ Como Rodar o Desafio
@@ -125,10 +139,10 @@ terraform init
 terraform validate
 ```
 
-4. Aplique a infraestrutura:
+4. Aplique usando seu arquivo tfvars:
 
 ```
-terraform apply
+terraform apply -var-file="dev.tfvars"
 ```
 
 5. Abra o navegador e teste:
@@ -140,7 +154,7 @@ http://<IP-PUBLICO-OUTPUT>
 Se tudo estiver correto, você verá a mensagem:
 
 ```
-Desafio DevOps #1 — Deploy realizado com sucesso!
+Desafio DevOps #1 Intermediário — Deploy realizado com sucesso!
 ```
 
 # 🧹 Como destruir a infraestrutura

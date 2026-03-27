@@ -10,4 +10,4 @@ systemctl start httpd
 systemctl enable httpd
 
 # Página HTML simples
-echo "Desafio DevOps #1 — Deploy realizado com sucesso!" > /var/www/html/index.html
+echo "Desafio DevOps #1 Intermediário — Deploy realizado com sucesso!" > /var/www/html/index.html
