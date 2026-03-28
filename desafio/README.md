@@ -31,7 +31,7 @@ Considere criar uma estrutura como:
 ```
 modules/
 ec2/
-security\_group/
+security_group/
 iam/        (opcional)
 ```
 
@@ -50,7 +50,6 @@ Exemplo de execução:
 
 ```
 terraform apply -var-file="dev.tfvars"
-
 ```
 
 Isso ajuda a manter ambientes diferentes de forma organizada.
