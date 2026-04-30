@@ -114,5 +114,20 @@ terraform destroy -var-file="dev.tfvars"
 * GitHub Actions para CI/CD de Terraform
 * Workspaces e múltiplos ambientes
 * Estrutura de pastas para projetos grandes
+
+## 🔜 Próximos Passos
+
+Se você concluiu este desafio e revisou a solução, o próximo passo é avançar para:
+
+➡️ [**Desafio DevOps #01 — Nível Avançado**](https://github.com/bfeliano/desafio-devops-01-terraform-ec2-avancado)   
+
+Nele você irá elevar ainda mais o projeto desenvolvido nos níveis iniciante e intermediário, implementando melhorias como:
+
+- Configuração de backend remoto em S3 para armazenamento do estado
+- Organização do projeto com states separados para cada ambiente (ex.: dev e prod)
+- Implementação de CI/CD com GitHub Actions, garantindo validação automática (fmt, validate, plan)
+- Integração de TFLint para aplicar linting e boas práticas
+- Detecção e prevenção de drift, assegurando que o estado reflita a infraestrutura real
+- Organização mais profissional de arquivos e ambientes, refletindo padrões utilizados em equipes Cloud/DevOps modernas
  
 E parabéns por chegar até aqui — agora você já está pronto(a) para o **Desafio Avançado**. 🚀🔥
